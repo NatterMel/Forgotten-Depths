@@ -8,7 +8,7 @@
 #include "InputMappingContext.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-
+#include "Engine/World.h"
 #include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
@@ -28,6 +28,12 @@ AMainCharacter::AMainCharacter()
 void AMainCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	bCanFire = true;
+}
+
+void AMainCharacter::ResetFire()
+{
+	bCanFire = true;
 }
 
 // Called every frame
@@ -89,13 +95,14 @@ void AMainCharacter::LookFunction(const FInputActionValue& Value)
 
 void AMainCharacter::OnFire()
 {
-	if (Controller)
+	if (Controller && bCanFire)
 	{
+		bCanFire = false;
 		UWorld* World = GetWorld();
 		if (!World)
 		return;
 
-		FVector Start = GetActorLocation();
+		FVector Start = Camera->GetComponentLocation();
 		FVector End = Start + (Camera->GetForwardVector() * 1000.f);
 
 		FCollisionQueryParams TraceParams(FName(TEXT("LineTrace")), true, this);
@@ -108,8 +115,13 @@ void AMainCharacter::OnFire()
 		{
 			//Implement
 			FVector HitLocation = HitResult.Location;
-			DrawDebugLine(World, Start, HitLocation, FColor::Red, true, 5.f, 0, 5.f);
+			DrawDebugLine(World, Start, HitLocation, FColor::Green, true, 5.f, 0, 5.f);
 		}
+		else
+		{
+			DrawDebugLine(World, Start, End, FColor::Red, true, 5.f, 0, 5.f);
+		}
+		GetWorld()->GetTimerManager().SetTimer(FireTimerHandle, this, &AMainCharacter::ResetFire, 1.f, true);
 	}
 }
 

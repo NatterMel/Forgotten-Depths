@@ -47,6 +47,12 @@ protected:
 
 	FVector2D PreviousMovementVector;
 
+	bool bCanFire;
+
+	FTimerHandle FireTimerHandle;
+
+	void ResetFire();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
