@@ -35,6 +35,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	class UInputAction* Fire;
 
+	UPROPERTY(EditAnywhere, Category = "RayTrace")
+	float SpreadRadius = 50.0f;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

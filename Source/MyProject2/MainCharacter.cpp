@@ -101,25 +101,51 @@ void AMainCharacter::OnFire()
 		UWorld* World = GetWorld();
 		if (!World)
 		return;
-
-		FVector Start = Camera->GetComponentLocation();
-		FVector End = Start + (Camera->GetForwardVector() * 1000.f);
-
+		
 		FCollisionQueryParams TraceParams(FName(TEXT("LineTrace")), true, this);
 		TraceParams.bTraceComplex = true;
 		TraceParams.bReturnPhysicalMaterial = false;
 
-		FHitResult HitResult;
-		bool bHit = World->LineTraceSingleByChannel(HitResult,Start,End,ECC_Visibility,TraceParams);
-		if (bHit)
+		FVector ForwardVector = Camera->GetForwardVector();
+		FVector RightVector = Camera->GetRightVector();
+		FVector UpVector = Camera->GetUpVector();
+
+		const int32 NumRays = 7;
+		FVector Start = Camera->GetComponentLocation();
+
+
+		
+		for (int32 i = 0; i < NumRays; i++)
 		{
-			//Implement
-			FVector HitLocation = HitResult.Location;
-			DrawDebugLine(World, Start, HitLocation, FColor::Green, true, 5.f, 0, 5.f);
-		}
-		else
-		{
-			DrawDebugLine(World, Start, End, FColor::Red, true, 5.f, 0, 5.f);
+			FVector TraceDirection = ForwardVector;
+
+			if (i > 0)
+			{
+				float AngleDeg = 60.0f * (i - 1);
+				float AngleRad = FMath::DegreesToRadians(AngleDeg);
+
+				FVector OffsetDirection = (ForwardVector * 0.5f) +
+					(RightVector * FMath::Cos(AngleRad)) +
+					(UpVector * FMath::Sin(AngleRad));
+				OffsetDirection.Normalize();
+
+				TraceDirection = (ForwardVector + (OffsetDirection * SpreadRadius)).GetSafeNormal();
+			}
+
+			FVector End = Start + (TraceDirection * 1000.f);
+
+			FHitResult HitResult;
+			bool bHit = World->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, TraceParams);
+			if (bHit)
+			{
+				//Implement
+				FVector HitLocation = HitResult.Location;
+				DrawDebugLine(World, Start, HitLocation, FColor::Green, true, 5.f, 0, 5.f);
+			}
+			else
+			{
+				DrawDebugLine(World, Start, End, FColor::Red, true, 5.f, 0, 5.f);
+			}
 		}
 		GetWorld()->GetTimerManager().SetTimer(FireTimerHandle, this, &AMainCharacter::ResetFire, 1.f, true);
 	}
