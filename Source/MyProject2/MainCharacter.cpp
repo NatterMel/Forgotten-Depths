@@ -9,6 +9,9 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Engine/World.h"
+#include "Engine/SpotLight.h"
+#include "Components/SphereComponent.h"
+#include "Interactable.h"
 #include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
@@ -22,6 +25,11 @@ AMainCharacter::AMainCharacter()
 	Camera->SetupAttachment(GetCapsuleComponent());
 	Camera->AddRelativeLocation(FVector(-40.0f, 1.75f, 64.0f));
 	Camera->bUsePawnControlRotation = true;
+
+	InteractionCheckSphere = CreateDefaultSubobject<USphereComponent>(TEXT("InteractionSphere"));
+	InteractionCheckSphere->SetupAttachment(RootComponent);
+	InteractionCheckSphere->SetSphereRadius(150.f);
+	InteractionCheckSphere->SetGenerateOverlapEvents(true);
 }
 
 // Called when the game starts or when spawned
@@ -29,6 +37,9 @@ void AMainCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	bCanFire = true;
+
+	InteractionCheckSphere->OnComponentBeginOverlap.AddDynamic(this, &AMainCharacter::OnOverlapBegin);
+	InteractionCheckSphere->OnComponentEndOverlap.AddDynamic(this, &AMainCharacter::OnOverlapEnd);
 }
 
 void AMainCharacter::ResetFire()
@@ -57,9 +68,14 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	{
 		Input->BindAction(Move, ETriggerEvent::Triggered, this, &AMainCharacter::MoveFunction);
 
-		Input->BindAction(Look, ETriggerEvent::Triggered, this, &AMainCharacter::LookFunction);
+		if (IsValid(Look))
+		{
+			Input->BindAction(Look, ETriggerEvent::Triggered, this, &AMainCharacter::LookFuction);
+		}
 
 		Input->BindAction(Fire, ETriggerEvent::Triggered, this, &AMainCharacter::OnFire);
+
+		Input->BindAction(Interact, ETriggerEvent::Triggered, this, &AMainCharacter::InteractFunction);
 	}
 
 }
@@ -82,15 +98,24 @@ void AMainCharacter::MoveFunction(const FInputActionValue& Value)
 	}
 }
 
-void AMainCharacter::LookFunction(const FInputActionValue& Value)
+void AMainCharacter::InteractFunction()
 {
-	if (Controller)
+	if (CurrentInteractable)
 	{
+		CurrentInteractable->OnInteract_Implementation(this);
+	}
+}
+
+void AMainCharacter::LookFuction(const FInputActionValue& Value)
+{
+	if (!Controller)
+	{
+		return;
+	}
 		FVector2D LookAxisVector = Value.Get<FVector2D>();
 
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
-	}
 }
 
 void AMainCharacter::OnFire()
@@ -138,7 +163,14 @@ void AMainCharacter::OnFire()
 			bool bHit = World->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, TraceParams);
 			if (bHit)
 			{
-				//Implement
+				if (IsValid(BlueprintToSpawn))
+				{
+					FVector SpawnLocation = HitResult.Location - (TraceDirection * 10.f);
+					FActorSpawnParameters SpawnParams;
+					GetWorld()->SpawnActor<ASpotLight>(BlueprintToSpawn, SpawnLocation, FRotator::ZeroRotator, SpawnParams);
+				}
+
+
 				FVector HitLocation = HitResult.Location;
 				DrawDebugLine(World, Start, HitLocation, FColor::Green, true, 5.f, 0, 5.f);
 			}
@@ -148,6 +180,29 @@ void AMainCharacter::OnFire()
 			}
 		}
 		GetWorld()->GetTimerManager().SetTimer(FireTimerHandle, this, &AMainCharacter::ResetFire, 1.f, true);
+	}
+}
+
+void AMainCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{		
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Some debug message!"));
+	if (OtherActor)
+	{
+		IInteractable* Interactable = Cast<IInteractable>(OtherActor);
+		if (Interactable)
+		{
+			CurrentInteractable = Interactable;
+
+		}
+	}
+}
+void AMainCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (OtherActor && CurrentInteractable && OtherActor == Cast<AActor>(CurrentInteractable))
+	{
+		CurrentInteractable = nullptr;
 	}
 }
 

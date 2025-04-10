@@ -5,6 +5,9 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "Engine/Spotlight.h"
+#include "Components/SphereComponent.h"
+#include "Interactable.h"
 #include "MainCharacter.generated.h"
 
 
@@ -35,18 +38,35 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	class UInputAction* Fire;
 
-	UPROPERTY(EditAnywhere, Category = "RayTrace")
+	UPROPERTY(EditAnywhere, Category = "Input")
+	class UInputAction* Interact;
+
+	UPROPERTY(EditAnywhere, Category = "Fire")
 	float SpreadRadius = 50.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire")
+	TSubclassOf<ASpotLight> BlueprintToSpawn;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UFUNCTION()
+	void LookFuction(const FInputActionValue& Value);
+
+	UFUNCTION()
 	void OnFire();
 
+	UFUNCTION()
 	void MoveFunction(const FInputActionValue& Value);
 
-	void LookFunction(const FInputActionValue& Value);
+	UFUNCTION()
+	void InteractFunction();
+
+	UPROPERTY(VisibleAnywhere)
+	USphereComponent* InteractionCheckSphere;
+
+	IInteractable* CurrentInteractable;
 
 	FVector2D PreviousMovementVector;
 
@@ -55,6 +75,14 @@ protected:
 	FTimerHandle FireTimerHandle;
 
 	void ResetFire();
+
+	UFUNCTION()
+	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 public:	
 	// Called every frame
