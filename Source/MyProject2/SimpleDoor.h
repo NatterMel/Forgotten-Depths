@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Components/BoxComponent.h"
 #include "Interactable.h"
+#include "ProximityComponent.h"
 #include "SimpleDoor.generated.h"
 
 UCLASS()
@@ -22,12 +23,15 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	virtual void OnInteract_Implementation(AActor* Interactor) override;
+	virtual void OnInteract_Implementation() override;
 
 protected:
 
     UPROPERTY(VisibleAnywhere)
     UStaticMeshComponent* DoorMesh;
+
+	UPROPERTY(VisibleAnywhere)
+	UProximityComponent* Trigger;
 
     bool bIsOpen;
 };

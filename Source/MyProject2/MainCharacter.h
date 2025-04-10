@@ -47,6 +47,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire")
 	TSubclassOf<ASpotLight> BlueprintToSpawn;
 
+	void AddInteract(AActor* Other);
+	void RemoveInteract();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -63,9 +66,6 @@ protected:
 	UFUNCTION()
 	void InteractFunction();
 
-	UPROPERTY(VisibleAnywhere)
-	USphereComponent* InteractionCheckSphere;
-
 	IInteractable* CurrentInteractable;
 
 	FVector2D PreviousMovementVector;
@@ -75,14 +75,6 @@ protected:
 	FTimerHandle FireTimerHandle;
 
 	void ResetFire();
-
-	UFUNCTION()
-	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
-		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	UFUNCTION()
-	void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
-		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 public:	
 	// Called every frame

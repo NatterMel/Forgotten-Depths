@@ -15,6 +15,9 @@ ASimpleDoor::ASimpleDoor()
     DoorMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DoorMesh"));
     RootComponent = DoorMesh;
 
+    Trigger = CreateDefaultSubobject<UProximityComponent>(TEXT("Trigger"));
+    Trigger->SetupAttachment(RootComponent);
+
 
     bIsOpen = false;
 
@@ -27,7 +30,7 @@ void ASimpleDoor::BeginPlay()
 	
 }
 
-void ASimpleDoor::OnInteract_Implementation(AActor* Interactor)
+void ASimpleDoor::OnInteract_Implementation()
 {
     bIsOpen = !bIsOpen;
     FRotator NewRotation = bIsOpen ? FRotator(0.f, 90.f, 0.f) : FRotator(0.f, 0.f, 0.f);

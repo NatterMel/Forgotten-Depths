@@ -25,11 +25,6 @@ AMainCharacter::AMainCharacter()
 	Camera->SetupAttachment(GetCapsuleComponent());
 	Camera->AddRelativeLocation(FVector(-40.0f, 1.75f, 64.0f));
 	Camera->bUsePawnControlRotation = true;
-
-	InteractionCheckSphere = CreateDefaultSubobject<USphereComponent>(TEXT("InteractionSphere"));
-	InteractionCheckSphere->SetupAttachment(RootComponent);
-	InteractionCheckSphere->SetSphereRadius(150.f);
-	InteractionCheckSphere->SetGenerateOverlapEvents(true);
 }
 
 // Called when the game starts or when spawned
@@ -37,14 +32,28 @@ void AMainCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	bCanFire = true;
-
-	InteractionCheckSphere->OnComponentBeginOverlap.AddDynamic(this, &AMainCharacter::OnOverlapBegin);
-	InteractionCheckSphere->OnComponentEndOverlap.AddDynamic(this, &AMainCharacter::OnOverlapEnd);
 }
 
 void AMainCharacter::ResetFire()
 {
 	bCanFire = true;
+}
+
+void AMainCharacter::AddInteract(AActor* Other)
+{
+	if (IInteractable* Interactable = Cast<IInteractable>(Other))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("MyActor has started!"));
+		CurrentInteractable = Interactable;
+	}
+}
+
+void AMainCharacter::RemoveInteract()
+{
+	if (CurrentInteractable)
+	{
+		CurrentInteractable = nullptr;
+	}
 }
 
 // Called every frame
@@ -102,7 +111,8 @@ void AMainCharacter::InteractFunction()
 {
 	if (CurrentInteractable)
 	{
-		CurrentInteractable->OnInteract_Implementation(this);
+
+		CurrentInteractable->OnInteract_Implementation();
 	}
 }
 
@@ -183,26 +193,4 @@ void AMainCharacter::OnFire()
 	}
 }
 
-void AMainCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{		
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Some debug message!"));
-	if (OtherActor)
-	{
-		IInteractable* Interactable = Cast<IInteractable>(OtherActor);
-		if (Interactable)
-		{
-			CurrentInteractable = Interactable;
-
-		}
-	}
-}
-void AMainCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	if (OtherActor && CurrentInteractable && OtherActor == Cast<AActor>(CurrentInteractable))
-	{
-		CurrentInteractable = nullptr;
-	}
-}
 
