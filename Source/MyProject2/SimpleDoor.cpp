@@ -10,10 +10,12 @@
 // Sets default values
 ASimpleDoor::ASimpleDoor()
 {
-    PrimaryActorTick.bCanEverTick = false;
+    PrimaryActorTick.bCanEverTick = true;
+
+    RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 
     DoorMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DoorMesh"));
-    RootComponent = DoorMesh;
+    DoorMesh->SetupAttachment(RootComponent);
 
     Trigger = CreateDefaultSubobject<UProximityComponent>(TEXT("Trigger"));
     Trigger->SetupAttachment(RootComponent);
@@ -30,10 +32,28 @@ void ASimpleDoor::BeginPlay()
 	
 }
 
+void ASimpleDoor::Tick(float DeltaTime)
+{
+    if (bIsmoving && DoorMesh)
+    {
+        FVector Current = DoorMesh->GetRelativeLocation();
+        FVector New = FMath::VInterpTo(Current, TargetLocation, DeltaTime, DoorOpenSpeed);
+
+        DoorMesh->SetRelativeLocation(New);
+
+        if (FVector::Dist(New, TargetLocation) < 0.5f)
+        {
+            DoorMesh->SetRelativeLocation(TargetLocation);
+            bIsmoving = false;
+        }
+    }
+}
+
 void ASimpleDoor::OnInteract_Implementation()
 {
     bIsOpen = !bIsOpen;
-    FRotator NewRotation = bIsOpen ? FRotator(0.f, 90.f, 0.f) : FRotator(0.f, 0.f, 0.f);
-    DoorMesh->SetRelativeRotation(NewRotation);
+    FVector NewLocation = bIsOpen ? OpenRelativePosition : FVector::ZeroVector;
+    TargetLocation = NewLocation;
+    bIsmoving = true;
 }
 

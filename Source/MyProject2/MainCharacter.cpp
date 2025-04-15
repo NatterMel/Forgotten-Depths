@@ -43,7 +43,6 @@ void AMainCharacter::AddInteract(AActor* Other)
 {
 	if (IInteractable* Interactable = Cast<IInteractable>(Other))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("MyActor has started!"));
 		CurrentInteractable = Interactable;
 	}
 }

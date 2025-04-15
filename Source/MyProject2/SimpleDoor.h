@@ -22,8 +22,16 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	virtual void Tick(float DeltaTime) override;
+
 public:	
 	virtual void OnInteract_Implementation() override;
+
+	UPROPERTY(EditDefaultsOnly)
+	FVector OpenRelativePosition;
+
+	UPROPERTY(EditAnywhere)
+	float DoorOpenSpeed = 200.f;
 
 protected:
 
@@ -34,5 +42,8 @@ protected:
 	UProximityComponent* Trigger;
 
     bool bIsOpen;
+	bool bIsmoving;
+
+	FVector TargetLocation;
 };
 
