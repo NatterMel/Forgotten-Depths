@@ -17,19 +17,15 @@ ASimpleDoor::ASimpleDoor()
     DoorMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DoorMesh"));
     DoorMesh->SetupAttachment(RootComponent);
 
-    Trigger = CreateDefaultSubobject<UProximityComponent>(TEXT("Trigger"));
-    Trigger->SetupAttachment(RootComponent);
-
-
-    bIsOpen = false;
+    bIsOpen = true;
 
 }
 
 // Called when the game starts or when spawned
 void ASimpleDoor::BeginPlay()
 {
-	Super::BeginPlay();
-	
+    Super::BeginPlay();
+
 }
 
 void ASimpleDoor::Tick(float DeltaTime)
@@ -42,18 +38,23 @@ void ASimpleDoor::Tick(float DeltaTime)
         DoorMesh->SetRelativeLocation(New);
 
         if (FVector::Dist(New, TargetLocation) < 0.5f)
-        {
+        {    
+            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("MyActor has started!"));
             DoorMesh->SetRelativeLocation(TargetLocation);
             bIsmoving = false;
         }
     }
 }
-
 void ASimpleDoor::OnInteract_Implementation()
 {
-    bIsOpen = !bIsOpen;
+    Open();
+}
+
+void ASimpleDoor::Open_Implementation()
+{
     FVector NewLocation = bIsOpen ? OpenRelativePosition : FVector::ZeroVector;
     TargetLocation = NewLocation;
     bIsmoving = true;
+    bIsOpen = !bIsOpen;
 }
 
