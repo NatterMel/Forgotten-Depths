@@ -12,6 +12,7 @@
 #include "Engine/SpotLight.h"
 #include "Components/SphereComponent.h"
 #include "Interactable.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
@@ -19,12 +20,14 @@ AMainCharacter::AMainCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
+	GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = true;
 
 	GetCapsuleComponent()->InitCapsuleSize(40.0f, 95.0f);
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
 	Camera->SetupAttachment(GetCapsuleComponent());
 	Camera->AddRelativeLocation(FVector(-40.0f, 1.75f, 64.0f));
 	Camera->bUsePawnControlRotation = true;
+
 }
 
 // Called when the game starts or when spawned
@@ -84,6 +87,10 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		Input->BindAction(Fire, ETriggerEvent::Triggered, this, &AMainCharacter::OnFire);
 
 		Input->BindAction(Interact, ETriggerEvent::Triggered, this, &AMainCharacter::InteractFunction);
+
+		Input->BindAction(Crouchs, ETriggerEvent::Triggered, this, &AMainCharacter::Crouching);
+		Input->BindAction(Jumps, ETriggerEvent::Triggered, this, &AMainCharacter::Jumping);
+		Input->BindAction(Jumps, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 	}
 
 }
@@ -176,7 +183,7 @@ void AMainCharacter::OnFire()
 				{
 					FVector SpawnLocation = HitResult.Location - (TraceDirection * 10.f);
 					FActorSpawnParameters SpawnParams;
-					GetWorld()->SpawnActor<ASpotLight>(BlueprintToSpawn, SpawnLocation, FRotator::ZeroRotator, SpawnParams);
+					GetWorld()->SpawnActor<AActor>(BlueprintToSpawn, SpawnLocation, FRotator::ZeroRotator, SpawnParams);
 				}
 
 
@@ -190,6 +197,23 @@ void AMainCharacter::OnFire()
 		}
 		GetWorld()->GetTimerManager().SetTimer(FireTimerHandle, this, &AMainCharacter::ResetFire, 1.f, true);
 	}
+}
+
+void AMainCharacter::Crouching()
+{
+	if (bIsCrouched)
+	{
+		UnCrouch();
+	}
+	else
+	{
+		Crouch();
+	}
+}
+
+void AMainCharacter::Jumping()
+{
+	Jump();
 }
 
 

@@ -41,11 +41,17 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	class UInputAction* Interact;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	class UInputAction* Jumps;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	class UInputAction* Crouchs;
+
 	UPROPERTY(EditAnywhere, Category = "Fire")
 	float SpreadRadius = 50.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire")
-	TSubclassOf<ASpotLight> BlueprintToSpawn;
+	TSubclassOf<AActor> BlueprintToSpawn;
 
 	void AddInteract(AActor* Other);
 	void RemoveInteract();
@@ -59,6 +65,12 @@ protected:
 
 	UFUNCTION()
 	void OnFire();
+
+	UFUNCTION()
+	void Crouching();
+
+	UFUNCTION()
+	void Jumping();
 
 	UFUNCTION()
 	void MoveFunction(const FInputActionValue& Value);
