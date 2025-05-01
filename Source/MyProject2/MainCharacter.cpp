@@ -122,6 +122,18 @@ void AMainCharacter::InteractFunction()
 	}
 }
 
+void AMainCharacter::RemoveLights()
+{
+	if (spawnedlights != 1)
+	{
+		--spawnedlights;
+	}else
+	{
+		--spawnedlights;
+		ResetFire();
+	}
+}
+
 void AMainCharacter::LookFuction(const FInputActionValue& Value)
 {
 	if (!Controller)
@@ -183,19 +195,20 @@ void AMainCharacter::OnFire()
 				{
 					FVector SpawnLocation = HitResult.Location - (TraceDirection * 10.f);
 					FActorSpawnParameters SpawnParams;
-					GetWorld()->SpawnActor<AActor>(BlueprintToSpawn, SpawnLocation, FRotator::ZeroRotator, SpawnParams);
+					AFadingLight* lights = GetWorld()->SpawnActor<AFadingLight>(BlueprintToSpawn, SpawnLocation, FRotator::ZeroRotator, SpawnParams);
+					lights->SetStartIntensity(StartIntensity, FadeRate);
+					++spawnedlights;
 				}
 
 
 				FVector HitLocation = HitResult.Location;
-				DrawDebugLine(World, Start, HitLocation, FColor::Green, true, 5.f, 0, 5.f);
+				//DrawDebugLine(World, Start, HitLocation, FColor::Green, true, 5.f, 0, 5.f);
 			}
 			else
 			{
-				DrawDebugLine(World, Start, End, FColor::Red, true, 5.f, 0, 5.f);
+				//DrawDebugLine(World, Start, End, FColor::Red, true, 5.f, 0, 5.f);
 			}
 		}
-		GetWorld()->GetTimerManager().SetTimer(FireTimerHandle, this, &AMainCharacter::ResetFire, 1.f, true);
 	}
 }
 

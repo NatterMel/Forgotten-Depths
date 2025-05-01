@@ -22,19 +22,14 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	class UPointLightComponent* PointLight;
 
-	UPROPERTY(EditAnywhere, Category = "Light")
-	float FadeRate = 0.1f;
-
-	UPROPERTY(EditAnywhere, Category = "Light")
-	float MinStartIntensity = 1.0f;
-
-	UPROPERTY(EditAnywhere, Category = "Light")
-	float MaxStartIntensity = 5.0f;
-
+	float FadeRate;
+	
 	float CurrentIntensity;
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	void SetStartIntensity(float intensity, float rate);
 
 };

@@ -8,6 +8,7 @@
 #include "Engine/Spotlight.h"
 #include "Components/SphereComponent.h"
 #include "Interactable.h"
+#include "FadingLight.h"
 #include "MainCharacter.generated.h"
 
 
@@ -47,11 +48,17 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	class UInputAction* Crouchs;
 
-	UPROPERTY(EditAnywhere, Category = "Fire")
+	UPROPERTY(EditAnywhere, Category = "Light")
 	float SpreadRadius = 50.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire")
-	TSubclassOf<AActor> BlueprintToSpawn;
+	UPROPERTY(EditDefaultsOnly, Category = "Light")
+	float StartIntensity = 5.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Light")
+	float FadeRate = 0.2f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Light")
+	TSubclassOf<AFadingLight> BlueprintToSpawn;
 
 	void AddInteract(AActor* Other);
 	void RemoveInteract();
@@ -78,6 +85,8 @@ protected:
 	UFUNCTION()
 	void InteractFunction();
 
+	int spawnedlights = 0;
+
 	IInteractable* CurrentInteractable;
 
 	FVector2D PreviousMovementVector;
@@ -94,5 +103,8 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	void RemoveLights();
+
 
 };

@@ -2,6 +2,8 @@
 
 
 #include "FadingLight.h"
+#include "MainCharacter.h"
+#include "Kismet/GameplayStatics.h"
 #include "Components/PointLightComponent.h"
 
 AFadingLight::AFadingLight()
@@ -15,26 +17,36 @@ AFadingLight::AFadingLight()
 void AFadingLight::BeginPlay()
 {
     Super::BeginPlay();
-
-    CurrentIntensity = FMath::FRandRange(MinStartIntensity, MaxStartIntensity);
-    PointLight->SetIntensity(CurrentIntensity);
 }
 
 void AFadingLight::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
-
     if (CurrentIntensity > 0.0f)
     {
         CurrentIntensity -= FadeRate * DeltaTime;
-        if (CurrentIntensity <= 0.0f)
+        if (CurrentIntensity <= 0.1f)
         {
-            Destroy();
+            APawn* PlayerPawn = UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn();
+            if (AMainCharacter* MyCharacter = Cast<AMainCharacter>(PlayerPawn))
+            {
+                MyCharacter->RemoveLights();
+                Destroy();
+            };
+
         }
         else
         {
             PointLight->SetIntensity(CurrentIntensity);
+            CurrentIntensity = PointLight->Intensity;
         }
     }
+}
+
+void AFadingLight::SetStartIntensity(float intensity, float rate)
+{
+    CurrentIntensity = intensity;
+    PointLight->SetIntensity(CurrentIntensity);
+    FadeRate = rate;
 }
 
