@@ -27,7 +27,10 @@ AMainCharacter::AMainCharacter()
 	Camera->SetupAttachment(GetCapsuleComponent());
 	Camera->AddRelativeLocation(FVector(-40.0f, 1.75f, 64.0f));
 	Camera->bUsePawnControlRotation = true;
-
+	if (ColorList.IsEmpty())
+	{
+		ColorList.Add(FLinearColor::White);
+	}
 }
 
 // Called when the game starts or when spawned
@@ -35,11 +38,25 @@ void AMainCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	bCanFire = true;
+	ColorChosen = ColorList[0];
 }
 
 void AMainCharacter::ResetFire()
 {
 	bCanFire = true;
+}
+
+void AMainCharacter::ChangeColor(const FInputActionValue& Value)
+{
+	if (bCanFire)
+	{
+		float add = Value.Get<float>();
+		int t = ColorList.Find(ColorChosen);
+		int NextIndex = (t  + ColorList.Num()) % ColorList.Num(); // ensure positive wraparound
+		ColorChosen = ColorList[NextIndex];
+			FString Msg = FString::Printf(TEXT("NextIndex: %d"), add);
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, Msg);
+	}
 }
 
 void AMainCharacter::AddInteract(AActor* Other)
@@ -90,7 +107,8 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 		Input->BindAction(Crouchs, ETriggerEvent::Triggered, this, &AMainCharacter::Crouching);
 		Input->BindAction(Jumps, ETriggerEvent::Triggered, this, &AMainCharacter::Jumping);
-		Input->BindAction(Jumps, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		Input->BindAction(Jumps, ETriggerEvent::Completed, this, &AMainCharacter::StopJumping);
+		Input->BindAction(Change, ETriggerEvent::Triggered, this, &AMainCharacter::ChangeColor);
 	}
 
 }
@@ -197,6 +215,7 @@ void AMainCharacter::OnFire()
 					FActorSpawnParameters SpawnParams;
 					AFadingLight* lights = GetWorld()->SpawnActor<AFadingLight>(BlueprintToSpawn, SpawnLocation, FRotator::ZeroRotator, SpawnParams);
 					lights->SetStartIntensity(StartIntensity, FadeRate);
+					lights->SetColor(ColorChosen);
 					++spawnedlights;
 				}
 

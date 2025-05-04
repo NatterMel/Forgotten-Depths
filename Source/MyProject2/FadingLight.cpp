@@ -50,3 +50,11 @@ void AFadingLight::SetStartIntensity(float intensity, float rate)
     FadeRate = rate;
 }
 
+void AFadingLight::SetColor(const FLinearColor& NewColor)
+{
+    if (PointLight)
+    {
+        PointLight->SetLightColor(NewColor);
+    }
+}
+

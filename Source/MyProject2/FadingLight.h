@@ -32,4 +32,6 @@ public:
 
 	void SetStartIntensity(float intensity, float rate);
 
+	void SetColor(const FLinearColor& NewColor);
+
 };

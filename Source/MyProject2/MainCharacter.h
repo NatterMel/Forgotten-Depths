@@ -48,6 +48,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	class UInputAction* Crouchs;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	class UInputAction* Change;
+
 	UPROPERTY(EditAnywhere, Category = "Light")
 	float SpreadRadius = 50.0f;
 
@@ -62,6 +65,9 @@ public:
 
 	void AddInteract(AActor* Other);
 	void RemoveInteract();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Light")
+	TArray<FLinearColor> ColorList;
 
 protected:
 	// Called when the game starts or when spawned
@@ -96,6 +102,10 @@ protected:
 	FTimerHandle FireTimerHandle;
 
 	void ResetFire();
+
+	void  ChangeColor(const FInputActionValue& Value);
+
+	FLinearColor ColorChosen;
 
 public:	
 	// Called every frame
