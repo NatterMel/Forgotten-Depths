@@ -44,19 +44,21 @@ void AMainCharacter::BeginPlay()
 void AMainCharacter::ResetFire()
 {
 	bCanFire = true;
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("CAN FIRE"));
 }
 
 void AMainCharacter::ChangeColor(const FInputActionValue& Value)
 {
-	if (bCanFire)
-	{
-		float add = Value.Get<float>();
-		int t = ColorList.Find(ColorChosen);
-		int NextIndex = (t  + ColorList.Num()) % ColorList.Num(); // ensure positive wraparound
-		ColorChosen = ColorList[NextIndex];
-			FString Msg = FString::Printf(TEXT("NextIndex: %d"), add);
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, Msg);
-	}
+	if (!bCanFire) return;
+
+	float WheelValue = Value.Get<float>();
+	int32 CurrentIndex = ColorList.Find(ColorChosen);
+	int32 NumColors = ColorList.Num();
+
+	int32 NextIndex = (CurrentIndex + static_cast<int32>(WheelValue)) % NumColors;
+	NextIndex = (NextIndex + NumColors) % NumColors;
+
+	ColorChosen = ColorList[NextIndex];
 }
 
 void AMainCharacter::AddInteract(AActor* Other)
