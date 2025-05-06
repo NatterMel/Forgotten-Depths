@@ -9,6 +9,7 @@
 #include "Components/SphereComponent.h"
 #include "Interactable.h"
 #include "FadingLight.h"
+#include "MyGameMode.h"
 #include "MainCharacter.generated.h"
 
 
@@ -106,6 +107,8 @@ protected:
 	void  ChangeColor(const FInputActionValue& Value);
 
 	FLinearColor ColorChosen;
+
+	AMyGameMode* GameMode;
 
 public:	
 	// Called every frame

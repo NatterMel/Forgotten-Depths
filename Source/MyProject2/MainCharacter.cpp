@@ -13,6 +13,8 @@
 #include "Components/SphereComponent.h"
 #include "Interactable.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "MyGameMode.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
@@ -31,6 +33,7 @@ AMainCharacter::AMainCharacter()
 	{
 		ColorList.Add(FLinearColor::White);
 	}
+	GameMode = Cast<AMyGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
 }
 
 // Called when the game starts or when spawned
@@ -50,7 +53,6 @@ void AMainCharacter::ResetFire()
 void AMainCharacter::ChangeColor(const FInputActionValue& Value)
 {
 	if (!bCanFire) return;
-
 	float WheelValue = Value.Get<float>();
 	int32 CurrentIndex = ColorList.Find(ColorChosen);
 	int32 NumColors = ColorList.Num();
@@ -59,6 +61,23 @@ void AMainCharacter::ChangeColor(const FInputActionValue& Value)
 	NextIndex = (NextIndex + NumColors) % NumColors;
 
 	ColorChosen = ColorList[NextIndex];
+	switch (NextIndex)
+	{
+	case 0:
+		GameMode->HandleRedColor();
+		break;
+	case 1:
+		GameMode->HandleGreenColor();
+		break;
+	case 2:
+		GameMode->HandleBlueColor();
+		break;
+	case 3:
+		GameMode->HandleWhiteColor();
+		break;
+	default:
+		break;
+	}
 }
 
 void AMainCharacter::AddInteract(AActor* Other)
