@@ -1,30 +1,34 @@
 // Fill out your copyright notice in the Description page of Project Settings.
+#include "MyGameMode.h"
 
 #include "Kismet/GameplayStatics.h"
-#include "MyGameMode.h"
 
 void AMyGameMode::HandleRedColor()
 {
-	SelectedColor = EColorType::Red;
+    SelectedColor = EColorType::Red;
     SetObjectsVisibility(SelectedColor);
+    GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Selected Color: Red"));
 }
 
 void AMyGameMode::HandleGreenColor()
 {
-	SelectedColor = EColorType::Green;
+    SelectedColor = EColorType::Green;
     SetObjectsVisibility(SelectedColor);
+    GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Selected Color: Green"));
 }
 
 void AMyGameMode::HandleBlueColor()
 {
-	SelectedColor = EColorType::Blue;
+    SelectedColor = EColorType::Blue;
     SetObjectsVisibility(SelectedColor);
+    GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("Selected Color: Blue"));
 }
 
 void AMyGameMode::HandleWhiteColor()
 {
-	SelectedColor = EColorType::White;
+    SelectedColor = EColorType::White;
     SetObjectsVisibility(SelectedColor);
+    GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::White, TEXT("Selected Color: White"));
 }
 
 void AMyGameMode::SetObjectsVisibility(EColorType Color)
