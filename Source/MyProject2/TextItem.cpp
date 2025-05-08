@@ -2,6 +2,8 @@
 
 
 #include "TextItem.h"
+#include "MyWidgetitem.h"
+#include "MyPreviewScene.h"
 
 // Sets default values
 ATextItem::ATextItem()
@@ -18,11 +20,6 @@ ATextItem::ATextItem()
 	Trigger = CreateDefaultSubobject<UProximityComponent>(TEXT("Trigger"));
 	Trigger->SetupAttachment(RootComponent);
 
-	Capture = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("SceneCapture"));
-	Capture->SetupAttachment(RootComponent);
-	Capture->SetRelativeLocation(FVector(200.f, 0.f, 0.f)); // In front of mesh
-	Capture->bCaptureEveryFrame = true;
-	Capture->bCaptureOnMovement = false;
 }
 
 
@@ -44,8 +41,30 @@ void ATextItem::Tick(float DeltaTime)
 void ATextItem::OnInteract_Implementation()
 {
 	ShowItemInfoUI();
+
 }
 
 void ATextItem::ShowItemInfoUI()
 {
+    if (!RenderTarget || !ItemInfoWidgetClass || !MeshComponent)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("ATextItem: Missing required asset."));
+        return;
+    }
+
+    if (!PreviewSceneActor)
+    {
+        PreviewSceneActor = GetWorld()->SpawnActor<AMyPreviewScene>(AMyPreviewScene::StaticClass());
+        PreviewSceneActor->SetActorHiddenInGame(true);
+        PreviewSceneActor->SceneCapture->TextureTarget = RenderTarget;
+    }
+
+    PreviewSceneActor->SetPreviewMesh(MeshComponent);
+
+    UMyWidgetitem* Widget = CreateWidget<UMyWidgetitem>(GetWorld(), ItemInfoWidgetClass);
+    if (Widget)
+    {
+        Widget->DisplayedText = ItemDescription;
+        Widget->AddToViewport();
+    }
 }

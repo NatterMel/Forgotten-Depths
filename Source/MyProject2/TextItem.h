@@ -6,8 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "ProximityComponent.h"
 #include "Interactable.h"
-#include "Components/SceneCaptureComponent2D.h"
 #include "Engine/TextureRenderTarget2D.h"
+#include "MyPreviewScene.h"
 #include "TextItem.generated.h"
 
 UCLASS()
@@ -19,17 +19,22 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(VisibleAnywhere)
-	class UStaticMeshComponent* MeshComponent;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item")
 	FText ItemDescription;
 
 	UPROPERTY(VisibleAnywhere)
-	UProximityComponent* Trigger;
+	class UStaticMeshComponent* MeshComponent;
 
 	UPROPERTY(VisibleAnywhere)
-	class USceneCaptureComponent2D* Capture;
+	UProximityComponent* Trigger;
+
+	AMyPreviewScene* PreviewSceneActor;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	UTextureRenderTarget2D* RenderTarget;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> ItemInfoWidgetClass;
 
 public:	
 	// Called every frame
@@ -40,4 +45,5 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Item")
 	void ShowItemInfoUI();
+
 };
