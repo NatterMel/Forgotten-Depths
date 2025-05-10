@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-
+#include "Components/PointLightComponent.h"
 #include "Components/SceneCaptureComponent2D.h"
 #include "MyPreviewScene.generated.h"
 
@@ -21,6 +21,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 	class USceneCaptureComponent2D* SceneCapture;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPointLightComponent* PreviewLight;
 
 	void SetPreviewMesh(UStaticMeshComponent* InMesh);
 

@@ -22,6 +22,10 @@ public:
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item Data", meta = (ExposeOnSpawn))
     FText DisplayedText;
 
-    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item Data", meta = (ExposeOnSpawn))
-    UTexture2D* DisplayedIcon;
+
+    UPROPERTY(meta = (BindWidget))
+    class UButton* CloseButton;
+protected:
+    UFUNCTION()
+    void OnCloseClicked();
 };

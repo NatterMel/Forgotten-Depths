@@ -3,6 +3,7 @@
 
 #include "TextItem.h"
 #include "MyWidgetitem.h"
+#include "Kismet/GameplayStatics.h"
 #include "MyPreviewScene.h"
 
 // Sets default values
@@ -52,19 +53,26 @@ void ATextItem::ShowItemInfoUI()
         return;
     }
 
-    if (!PreviewSceneActor)
+    if (!PreviewSceneActor && PreviewSceneClass)
     {
-        PreviewSceneActor = GetWorld()->SpawnActor<AMyPreviewScene>(AMyPreviewScene::StaticClass());
-        PreviewSceneActor->SetActorHiddenInGame(true);
-        PreviewSceneActor->SceneCapture->TextureTarget = RenderTarget;
+        PreviewSceneActor = GetWorld()->SpawnActor<AMyPreviewScene>(PreviewSceneClass);
+        if (PreviewSceneActor)
+        {
+            PreviewSceneActor->SetActorLocation(FVector(100000.f, 0.f, 0.f));
+            PreviewSceneActor->SceneCapture->TextureTarget = RenderTarget;
+            PreviewSceneActor->SetPreviewMesh(MeshComponent);
+        }
     }
 
-    PreviewSceneActor->SetPreviewMesh(MeshComponent);
 
-    UMyWidgetitem* Widget = CreateWidget<UMyWidgetitem>(GetWorld(), ItemInfoWidgetClass);
+    APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+    UMyWidgetitem* Widget = CreateWidget<UMyWidgetitem>(PC, ItemInfoWidgetClass);
     if (Widget)
     {
         Widget->DisplayedText = ItemDescription;
         Widget->AddToViewport();
+        PC->bShowMouseCursor = true;
+        PC->SetInputMode(FInputModeUIOnly());
+        UGameplayStatics::SetGamePaused(GetWorld(), true);
     }
 }

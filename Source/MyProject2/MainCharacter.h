@@ -70,6 +70,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Light")
 	TArray<FLinearColor> ColorList;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
+	TSubclassOf<UUserWidget> WidgetClass;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -109,6 +112,7 @@ protected:
 	FLinearColor ColorChosen;
 
 	AMyGameMode* GameMode;
+
 
 public:	
 	// Called every frame

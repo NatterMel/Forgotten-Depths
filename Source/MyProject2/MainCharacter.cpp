@@ -12,6 +12,7 @@
 #include "Engine/SpotLight.h"
 #include "Components/SphereComponent.h"
 #include "Interactable.h"
+#include "Blueprint/UserWidget.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "MyGameMode.h"
 #include "Kismet/GameplayStatics.h"

@@ -28,7 +28,8 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UProximityComponent* Trigger;
 
-	AMyPreviewScene* PreviewSceneActor;
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<AMyPreviewScene> PreviewSceneClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	UTextureRenderTarget2D* RenderTarget;
@@ -36,6 +37,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> ItemInfoWidgetClass;
 
+	AMyPreviewScene* PreviewSceneActor;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
