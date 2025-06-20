@@ -55,6 +55,6 @@ void ASimpleDoor::Open_Implementation()
     FVector NewLocation = bIsOpen ? OpenRelativePosition : FVector::ZeroVector;
     TargetLocation = NewLocation;
     bIsmoving = true;
-    bIsOpen = !bIsOpen;
+    bIsOpen = false;
 }
 
