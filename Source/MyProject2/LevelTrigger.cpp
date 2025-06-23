@@ -32,7 +32,7 @@ void ALevelTrigger::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* 
 
         if (LevelToLoad.ToSoftObjectPath().IsValid())
         {
-            FString LevelPath = LevelToLoad.GetAssetName();
+            FString LevelPath = LevelToLoad.ToSoftObjectPath().GetLongPackageName();
             UGameplayStatics::OpenLevel(this, FName(*LevelPath));
         }
     }
