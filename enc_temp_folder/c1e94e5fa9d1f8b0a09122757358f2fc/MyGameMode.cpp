@@ -65,6 +65,10 @@ void AMyGameMode::StartPlay()
 	UGameplayStatics::GetAllActorsWithTag(GetWorld(), "GreenOnly", GreenActors);
 	UGameplayStatics::GetAllActorsWithTag(GetWorld(), "BlueOnly", BlueActors);
 	UGameplayStatics::GetAllActorsWithTag(GetWorld(), "YellowOnly", WhiteActors);
+    PrintActorList("RedOnly", RedActors);
+    PrintActorList("GreenOnly", GreenActors);
+    PrintActorList("BlueOnly", BlueActors);
+    PrintActorList("YellowOnly", WhiteActors);
     HideAll();
 }
 
@@ -87,7 +91,6 @@ void AMyGameMode::HideAll()
     HideAll(BlueActors);
     HideAll(WhiteActors);
 }
-//Debug
 void AMyGameMode::PrintActorList(const FString& TagName, const TArray<AActor*>& ActorArray)
 {
     FString ActorNames = FString::Printf(TEXT("Actors with Tag %s:"), *TagName);

@@ -5,17 +5,10 @@
 #include "CoreMinimal.h"
 #include "Components/PointLightComponent.h"
 #include "GameFramework/Actor.h"
-#include "Openable.h"
 #include "LightStatue.generated.h"
 
-UENUM(BlueprintType)
-enum class ELightStatueMode : uint8
-{
-    Automatic     UMETA(DisplayName = "Automatic"),
-    Manual        UMETA(DisplayName = "Manual")
-};
 UCLASS()
-class MYPROJECT2_API ALightStatue : public AActor, public IOpenable
+class MYPROJECT2_API ALightStatue : public AActor
 {
 	GENERATED_BODY()
 	
@@ -31,24 +24,12 @@ protected:
     float TimeAccumulator = 0.0f;
     bool bSequenceFinished = false;
 
-
-    UFUNCTION(BlueprintCallable, Category = "Light Statue")
     void UpdateLights();
-
-    UFUNCTION(BlueprintCallable, Category = "Light Statue")
     void TurnOffLights();
-
-    UFUNCTION(BlueprintCallable, Category = "Light Statue")
     void RestartSequence();
     FTimerHandle RestartTimerHandle;
 
-    UFUNCTION(BlueprintCallable, Category = "Light Statue")
-    void AdvanceToNextColor();
-
 public:	
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Light Statue")
-    ELightStatueMode LightStatueMode = ELightStatueMode::Automatic;
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -72,7 +53,5 @@ public:
 
     UPROPERTY(VisibleAnywhere)
     class UStaticMeshComponent* MeshComponent;
-
-    virtual void Open_Implementation() override;
 
 };

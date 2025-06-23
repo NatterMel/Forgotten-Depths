@@ -45,5 +45,7 @@ protected:
 	bool bIsmoving;
 
 	FVector TargetLocation;
+
+	bool bHasBeenOpened = false;
 };
 

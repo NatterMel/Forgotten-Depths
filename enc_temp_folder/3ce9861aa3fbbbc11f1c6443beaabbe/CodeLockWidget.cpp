@@ -28,6 +28,7 @@ void UCodeLockWidget::HandleDigit(int32 Digit)
 {
     if (CodeLockRef)
     {
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Hello from C++!"));
         CodeLockRef->EnterDigit(Digit);
         UpdateDisplayText();
     }

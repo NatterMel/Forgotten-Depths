@@ -15,6 +15,8 @@ UProximityComponent::UProximityComponent()
 	BoxComponent->InitBoxExtent(FVector(200.f));
 	BoxComponent->SetCollisionProfileName(TEXT("Trigger"));
 	BoxComponent->SetGenerateOverlapEvents(true);
+	BoxComponent->bHiddenInGame = false;
+	BoxComponent->SetVisibility(true);
 	BoxComponent->SetupAttachment(this);
 	BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &UProximityComponent::OnOverlapBegin);
 	BoxComponent->OnComponentEndOverlap.AddDynamic(this, &UProximityComponent::OnOverlapEnd);

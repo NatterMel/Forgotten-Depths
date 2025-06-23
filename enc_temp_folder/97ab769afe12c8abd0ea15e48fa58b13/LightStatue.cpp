@@ -32,7 +32,6 @@ void ALightStatue::BeginPlay()
 {
 	Super::BeginPlay();
     UpdateLights();
-    TurnOffLights();
 }
 
 void ALightStatue::UpdateLights()
@@ -64,9 +63,9 @@ void ALightStatue::RestartSequence()
 // Called every frame
 void ALightStatue::Tick(float DeltaTime)
 {
-    Super::Tick(DeltaTime);
+	Super::Tick(DeltaTime);
 
-    if (LightStatueMode != ELightStatueMode::Automatic || bSequenceFinished || ColorSequence.Num() == 0)
+    if (bSequenceFinished || ColorSequence.Num() == 0)
         return;
 
     TimeAccumulator += DeltaTime;
@@ -75,6 +74,7 @@ void ALightStatue::Tick(float DeltaTime)
         TimeAccumulator = 0.0f;
 
         UpdateLights();
+
         CurrentColorIndex++;
 
         if (CurrentColorIndex >= ColorSequence.Num())
@@ -92,27 +92,4 @@ void ALightStatue::Tick(float DeltaTime)
         }
     }
 }
-void ALightStatue::Open_Implementation()
-{
-    AdvanceToNextColor();
-}
-void ALightStatue::AdvanceToNextColor()
-{
-    if (LightStatueMode != ELightStatueMode::Manual || ColorSequence.Num() == 0)
-        return;
 
-    if (bSequenceFinished)
-    {
-        RestartSequence();
-        return;
-    }
-
-    UpdateLights();
-    CurrentColorIndex++;
-
-    if (CurrentColorIndex >= ColorSequence.Num())
-    {
-        bSequenceFinished = true;
-        TurnOffLights();
-    }
-}

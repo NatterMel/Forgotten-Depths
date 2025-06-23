@@ -39,7 +39,6 @@ void ASimpleDoor::Tick(float DeltaTime)
 
         if (FVector::Dist(New, TargetLocation) < 0.5f)
         {    
-            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("MyActor has started!"));
             DoorMesh->SetRelativeLocation(TargetLocation);
             bIsmoving = false;
         }
@@ -47,14 +46,17 @@ void ASimpleDoor::Tick(float DeltaTime)
 }
 void ASimpleDoor::OnInteract_Implementation()
 {
-    Open();
+    Execute_Open(this);
 }
 
 void ASimpleDoor::Open_Implementation()
 {
+    if (bHasBeenOpened) return;
+
     FVector NewLocation = bIsOpen ? OpenRelativePosition : FVector::ZeroVector;
     TargetLocation = NewLocation;
     bIsmoving = true;
     bIsOpen = false;
+    bHasBeenOpened = true;
 }
 
