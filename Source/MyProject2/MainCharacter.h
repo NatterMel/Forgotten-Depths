@@ -23,8 +23,8 @@ public:
 	// Sets default values for this character's properties
 	AMainCharacter();
 
-	UPROPERTY(EditInstanceOnly, Category = "Mesh")
-	class USkeletalMeshComponent* Machine;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh")
+	class UStaticMeshComponent* MeshComponent;
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, Category = "Camera")
 	class UCameraComponent* Camera;

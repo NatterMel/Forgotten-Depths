@@ -29,6 +29,8 @@ AMainCharacter::AMainCharacter()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
 	Camera->SetupAttachment(GetCapsuleComponent());
 	Camera->AddRelativeLocation(FVector(-40.0f, 1.75f, 64.0f));
+	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
+	MeshComponent->SetupAttachment(Camera);
 	Camera->bUsePawnControlRotation = true;
 	if (ColorList.IsEmpty())
 	{
