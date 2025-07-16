@@ -65,6 +65,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Light")
 	float FadeRate = 0.2f;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Light")
+	float LengthLight = 2000.0f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Light")
 	TSubclassOf<AFadingLight> BlueprintToSpawn;
 

@@ -50,6 +50,14 @@ void AMainCharacter::BeginPlay()
 	Super::BeginPlay();
 	bCanFire = true;
 	ColorChosen = ColorList[0];
+
+	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* SubSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		{
+			SubSystem->AddMappingContext(InputMapping, 0);
+		}
+	}
 }
 
 void AMainCharacter::ResetFire()
@@ -114,13 +122,6 @@ void AMainCharacter::Tick(float DeltaTime)
 void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
-	{
-		if (UEnhancedInputLocalPlayerSubsystem* SubSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
-			SubSystem->AddMappingContext(InputMapping, 0);
-		}
-	}
 	if(UEnhancedInputComponent* Input = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		Input->BindAction(Move, ETriggerEvent::Triggered, this, &AMainCharacter::MoveFunction);
@@ -234,7 +235,7 @@ void AMainCharacter::LookFuction(const FInputActionValue& Value)
 
 void AMainCharacter::OnFire()
 {
-	if (Controller && bCanFire)
+	if (bCanFire)
 	{
 		bCanFire = false;
 		UWorld* World = GetWorld();
@@ -271,7 +272,7 @@ void AMainCharacter::OnFire()
 				TraceDirection = (ForwardVector + (OffsetDirection * SpreadRadius)).GetSafeNormal();
 			}
 
-			FVector End = Start + (TraceDirection * 1000.f);
+			FVector End = Start + (TraceDirection * LengthLight);
 
 			FHitResult HitResult;
 			bool bHit = World->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, TraceParams);
@@ -293,7 +294,7 @@ void AMainCharacter::OnFire()
 			}
 			else
 			{
-				//DrawDebugLine(World, Start, End, FColor::Red, true, 5.f, 0, 5.f);
+				ResetFire();
 			}
 		}
 	}
