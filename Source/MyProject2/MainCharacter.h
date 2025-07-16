@@ -10,6 +10,7 @@
 #include "Interactable.h"
 #include "FadingLight.h"
 #include "MyGameMode.h"
+#include "PauseMenu.h"
 #include "MainCharacter.generated.h"
 
 
@@ -52,6 +53,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	class UInputAction* Change;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	class UInputAction* Pause;
+
 	UPROPERTY(EditAnywhere, Category = "Light")
 	float SpreadRadius = 50.0f;
 
@@ -72,6 +76,11 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
 	TSubclassOf<UUserWidget> WidgetClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
+	TSubclassOf<UUserWidget> PauseMenu;
+
+	void ClearPauseMenu();
 
 protected:
 	// Called when the game starts or when spawned
@@ -94,6 +103,13 @@ protected:
 
 	UFUNCTION()
 	void InteractFunction();
+
+	UFUNCTION()
+	void PauseFunction();
+
+	UPROPERTY()
+	UUserWidget* PauseMenuInstance;
+
 
 	int spawnedlights = 0;
 

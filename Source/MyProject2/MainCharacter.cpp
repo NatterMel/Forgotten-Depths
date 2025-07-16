@@ -37,6 +37,11 @@ AMainCharacter::AMainCharacter()
 	GameMode = Cast<AMyGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
 }
 
+void AMainCharacter::ClearPauseMenu()
+{
+	PauseMenuInstance = nullptr;
+}
+
 // Called when the game starts or when spawned
 void AMainCharacter::BeginPlay()
 {
@@ -131,6 +136,7 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		Input->BindAction(Jumps, ETriggerEvent::Triggered, this, &AMainCharacter::Jumping);
 		Input->BindAction(Jumps, ETriggerEvent::Completed, this, &AMainCharacter::StopJumping);
 		Input->BindAction(Change, ETriggerEvent::Triggered, this, &AMainCharacter::ChangeColor);
+		Input->BindAction(Pause, ETriggerEvent::Triggered, this, &AMainCharacter::PauseFunction);
 	}
 
 }
@@ -159,6 +165,44 @@ void AMainCharacter::InteractFunction()
 	{
 
 		CurrentInteractable->OnInteract_Implementation();
+	}
+}
+
+void AMainCharacter::PauseFunction()
+{
+	const bool bShouldPause = !UGameplayStatics::IsGamePaused(GetWorld());
+	UGameplayStatics::SetGamePaused(GetWorld(), bShouldPause);
+
+	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if (!PC) return;
+
+	if (bShouldPause)
+	{
+		if (PauseMenu && !PauseMenuInstance)
+		{
+			PauseMenuInstance = CreateWidget<UUserWidget>(GetWorld(), PauseMenu);
+			if (PauseMenuInstance)
+			{
+				PauseMenuInstance->AddToViewport();
+
+				FInputModeUIOnly InputMode;
+				InputMode.SetWidgetToFocus(PauseMenuInstance->TakeWidget());
+				InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+				PC->SetInputMode(InputMode);
+				PC->bShowMouseCursor = true;
+			}
+		}
+	}
+	else
+	{
+		if (PauseMenuInstance)
+		{
+			PauseMenuInstance->RemoveFromParent();
+			PauseMenuInstance = nullptr;
+		}
+
+		PC->SetInputMode(FInputModeGameOnly());
+		PC->bShowMouseCursor = false;
 	}
 }
 

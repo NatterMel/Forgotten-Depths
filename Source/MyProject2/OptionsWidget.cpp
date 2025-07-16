@@ -22,14 +22,23 @@ void UOptionsWidget::NativeConstruct()
     if (AudioTabButton)
         AudioTabButton->OnClicked.AddDynamic(this, &UOptionsWidget::OnAudioTabClicked);
 
-    if (GeneralTabButton)
-        GeneralTabButton->OnClicked.AddDynamic(this, &UOptionsWidget::OnGeneralTabClicked);
-
     if (ApplyVideoSettingsButton)
         ApplyVideoSettingsButton->OnClicked.AddDynamic(this, &UOptionsWidget::OnApplyVideoSettingsClicked);
 
     if (BackButton)
         BackButton->OnClicked.AddDynamic(this, &UOptionsWidget::OnBackClicked);
+
+    if (MasterVolumeSlider)
+        MasterVolumeSlider->OnValueChanged.AddDynamic(this, &UOptionsWidget::OnMasterVolumeChanged);
+
+    if (MusicVolumeSlider)
+        MusicVolumeSlider->OnValueChanged.AddDynamic(this, &UOptionsWidget::OnMusicVolumeChanged);
+
+    if (SFXVolumeSlider)
+        SFXVolumeSlider->OnValueChanged.AddDynamic(this, &UOptionsWidget::OnSFXVolumeChanged);
+
+    if (ApplyAudioSettingsButton)
+        ApplyAudioSettingsButton->OnClicked.AddDynamic(this, &UOptionsWidget::OnApplyAudioSettingsClicked);
 
     //Video Constructor
     if (ResolutionComboBox)
@@ -50,8 +59,7 @@ void UOptionsWidget::NativeConstruct()
         GraphicsQualityComboBox->AddOption(TEXT("Epic"));
         GraphicsQualityComboBox->SetSelectedIndex(2);
     }
-
-    ShowTab(GeneralTabContent);
+    ShowTab(nullptr);
 }
 
 void UOptionsWidget::OnVideoTabClicked()
@@ -64,10 +72,6 @@ void UOptionsWidget::OnAudioTabClicked()
     ShowTab(AudioTabContent);
 }
 
-void UOptionsWidget::OnGeneralTabClicked()
-{
-    ShowTab(GeneralTabContent);
-}
 
 void UOptionsWidget::OnBackClicked()
 {
@@ -84,7 +88,6 @@ void UOptionsWidget::ShowTab(UWidget* TabToShow)
 {
     if (VideoTabContent) VideoTabContent->SetVisibility(ESlateVisibility::Collapsed);
     if (AudioTabContent) AudioTabContent->SetVisibility(ESlateVisibility::Collapsed);
-    if (GeneralTabContent) GeneralTabContent->SetVisibility(ESlateVisibility::Collapsed);
 
     if (TabToShow) TabToShow->SetVisibility(ESlateVisibility::Visible);
 }
@@ -130,4 +133,26 @@ void UOptionsWidget::OnApplyVideoSettingsClicked()
     }
 
 
+}
+void UOptionsWidget::OnApplyAudioSettingsClicked()
+{
+    if (UGameUserSettings* Settings = GEngine->GetGameUserSettings())
+    {
+        Settings->ApplySettings(false);
+        Settings->SaveSettings();
+    }
+}
+void UOptionsWidget::OnMasterVolumeChanged(float Value)
+{
+    UGameplayStatics::SetSoundMixClassOverride(GetWorld(), SoundMix, MasterSoundClass, Value, 1.0f, 0.0f, true);
+}
+
+void UOptionsWidget::OnMusicVolumeChanged(float Value)
+{
+    UGameplayStatics::SetSoundMixClassOverride(GetWorld(), SoundMix, MusicSoundClass, Value, 1.0f, 0.0f, true);
+}
+
+void UOptionsWidget::OnSFXVolumeChanged(float Value)
+{
+    UGameplayStatics::SetSoundMixClassOverride(GetWorld(), SoundMix, SFXSoundClass, Value, 1.0f, 0.0f, true);
 }

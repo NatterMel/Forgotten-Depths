@@ -46,6 +46,8 @@ void UMainMenu::OnOptionsClicked()
         if (OptionsWidget)
         {
             OptionsWidget->AddToViewport();
+            OptionsWidget->SetVisibility(ESlateVisibility::Visible);
+            OptionsWidget->SetIsEnabled(true);
             APlayerController* PC = UGameplayStatics::GetPlayerController(this, 0);
             if (PC)
             {

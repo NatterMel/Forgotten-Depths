@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/Slider.h"
+#include "Sound/SoundMix.h"
 #include "OptionsWidget.generated.h"
 
 /**
@@ -23,18 +25,12 @@ public:
     UFUNCTION()
     void OnAudioTabClicked();
 
-    UFUNCTION()
-    void OnGeneralTabClicked();
-
 protected:
     UPROPERTY(meta = (BindWidget))
     class UButton* VideoTabButton;
 
     UPROPERTY(meta = (BindWidget))
     class UButton* AudioTabButton;
-
-    UPROPERTY(meta = (BindWidget))
-    class UButton* GeneralTabButton;
 
     UPROPERTY(meta = (BindWidget))
     class UButton* BackButton;
@@ -46,7 +42,29 @@ protected:
     class UWidget* AudioTabContent;
 
     UPROPERTY(meta = (BindWidget))
-    class UWidget* GeneralTabContent;
+    USlider* MasterVolumeSlider;
+
+    UPROPERTY(meta = (BindWidget))
+    USlider* MusicVolumeSlider;
+
+    UPROPERTY(meta = (BindWidget))
+    USlider* SFXVolumeSlider;
+
+    // Optionally: Apply audio button
+    UPROPERTY(meta = (BindWidget))
+    UButton* ApplyAudioSettingsButton;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+    USoundMix* SoundMix;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+    USoundClass* MasterSoundClass;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+    USoundClass* MusicSoundClass;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+    USoundClass* SFXSoundClass;
 
     UFUNCTION()
     void OnBackClicked();
@@ -68,4 +86,16 @@ protected:
 
     UFUNCTION()
     void OnApplyVideoSettingsClicked();
+
+    UFUNCTION()
+    void OnApplyAudioSettingsClicked();
+
+    UFUNCTION()
+    void OnMasterVolumeChanged(float Value);
+
+    UFUNCTION()
+    void OnMusicVolumeChanged(float Value);
+
+    UFUNCTION()
+    void OnSFXVolumeChanged(float Value);
 };
