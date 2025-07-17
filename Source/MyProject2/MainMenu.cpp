@@ -4,6 +4,7 @@
 #include "MainMenu.h"
 #include "Components/Button.h"
 #include "MySaveGame.h"
+#include "MainCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
 bool UMainMenu::Initialize()
@@ -11,7 +12,7 @@ bool UMainMenu::Initialize()
     if (!Super::Initialize()) return false;
 
     if (StartButton) StartButton->OnClicked.AddDynamic(this, &UMainMenu::OnStartClicked);
-    if (ContinueButton) StartButton->OnClicked.AddDynamic(this, &UMainMenu::OnContinueClicked);
+    if (ContinueButton) ContinueButton->OnClicked.AddDynamic(this, &UMainMenu::OnContinueClicked);
     if (OptionsButton) OptionsButton->OnClicked.AddDynamic(this, &UMainMenu::OnOptionsClicked);
     if (QuitButton) QuitButton->OnClicked.AddDynamic(this, &UMainMenu::OnQuitClicked);
 
@@ -26,11 +27,12 @@ bool UMainMenu::Initialize()
     {
         if (SavedLevel == 0)
         {
-            ContinueButton->SetIsEnabled(false); 
+            ContinueButton->SetIsEnabled(false);
             ContinueButton->SetVisibility(ESlateVisibility::Visible);
             ContinueButton->SetBackgroundColor(FLinearColor::Gray);
         }
     }
+
     return true;
 }
 
@@ -99,4 +101,10 @@ int UMainMenu::LoadLevelProgress()
         }
     }
     return -1;
+}
+void UMainMenu::SaveLevelProgress()
+{
+    UMySaveGame* SaveGameInstance = Cast<UMySaveGame>(UGameplayStatics::CreateSaveGameObject(UMySaveGame::StaticClass()));
+    SaveGameInstance->PlayerLevel = 0;
+    UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("MySaveSlot"), 0);
 }

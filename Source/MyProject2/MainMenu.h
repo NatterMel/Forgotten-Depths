@@ -51,6 +51,8 @@ protected:
     int LoadLevelProgress();
 
     void Loadlevel(int level);
+
+    void SaveLevelProgress();
     
     UPROPERTY()
     UUserWidget* OptionsWidget;

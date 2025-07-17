@@ -55,6 +55,18 @@ void AMainCharacter::BeginPlay()
 	Super::BeginPlay();
 	bCanFire = true;
 	ColorChosen = ColorList[0];
+	
+	FString CurrentLevel = GetWorld()->GetMapName();
+	CurrentLevel.RemoveFromStart(GetWorld()->StreamingLevelsPrefix);
+	if (CurrentLevel == TEXT("Menu"))
+	{
+		if (HUDWidget)
+		{
+			HUDWidget->RemoveFromParent();
+			HUDWidget = nullptr;
+		}
+		return; // Skip the rest of the setup if not in a playable level
+	}
 
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
@@ -76,17 +88,23 @@ void AMainCharacter::BeginPlay()
 
 	if (ColorIndicator && IndicatorMaterialBase)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("Bruh"));
 		IndicatorMaterial = UMaterialInstanceDynamic::Create(IndicatorMaterialBase, this);
 		ColorIndicator->SetMaterial(0, IndicatorMaterial);
 		IndicatorMaterial->SetVectorParameterValue("Color", ColorChosen);
+	}
+}
+void AMainCharacter::DeactivateHUD()
+{
+	if (HUDWidget)
+	{
+		HUDWidget->RemoveFromParent();
+		HUDWidget = nullptr;
 	}
 }
 
 void AMainCharacter::ResetFire()
 {
 	bCanFire = true;
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("CAN FIRE"));
 	if (IndicatorMaterial)
 	{
 		IndicatorMaterial->SetVectorParameterValue("Color", ColorChosen);
