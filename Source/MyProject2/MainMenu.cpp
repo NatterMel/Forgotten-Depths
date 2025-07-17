@@ -3,6 +3,7 @@
 
 #include "MainMenu.h"
 #include "Components/Button.h"
+#include "MySaveGame.h"
 #include "Kismet/GameplayStatics.h"
 
 bool UMainMenu::Initialize()
@@ -10,6 +11,7 @@ bool UMainMenu::Initialize()
     if (!Super::Initialize()) return false;
 
     if (StartButton) StartButton->OnClicked.AddDynamic(this, &UMainMenu::OnStartClicked);
+    if (ContinueButton) StartButton->OnClicked.AddDynamic(this, &UMainMenu::OnContinueClicked);
     if (OptionsButton) OptionsButton->OnClicked.AddDynamic(this, &UMainMenu::OnOptionsClicked);
     if (QuitButton) QuitButton->OnClicked.AddDynamic(this, &UMainMenu::OnQuitClicked);
 
@@ -19,23 +21,31 @@ bool UMainMenu::Initialize()
         PC->SetInputMode(FInputModeUIOnly());
         PC->bShowMouseCursor = true;
     }
-
+    int SavedLevel = LoadLevelProgress(); 
+    if (ContinueButton)
+    {
+        if (SavedLevel == 0)
+        {
+            ContinueButton->SetIsEnabled(false); 
+            ContinueButton->SetVisibility(ESlateVisibility::Visible);
+            ContinueButton->SetBackgroundColor(FLinearColor::Gray);
+        }
+    }
     return true;
 }
 
 void UMainMenu::OnStartClicked()
 {
-    if (StartMap.ToSoftObjectPath().IsValid())
+    Loadlevel(0);
+}
+void UMainMenu::OnContinueClicked()
+{
+    int level = LoadLevelProgress();
+    if (level >= 0)
     {
-        APlayerController* PC = UGameplayStatics::GetPlayerController(this, 0);
-        if (PC)
-        {
-            PC->SetInputMode(FInputModeGameOnly());
-            PC->bShowMouseCursor = false;
-        }
-        FString MapPath = StartMap.ToSoftObjectPath().GetAssetPathString();
-        UGameplayStatics::OpenLevelBySoftObjectPtr(this, StartMap);
+        Loadlevel(level);
     }
+
 }
 
 void UMainMenu::OnOptionsClicked()
@@ -61,4 +71,32 @@ void UMainMenu::OnOptionsClicked()
 void UMainMenu::OnQuitClicked()
 {
     UKismetSystemLibrary::QuitGame(this, nullptr, EQuitPreference::Quit, true);
+}
+
+void UMainMenu::Loadlevel(int level)
+{
+    if (StartMap[level].ToSoftObjectPath().IsValid())
+    {
+        APlayerController* PC = UGameplayStatics::GetPlayerController(this, 0);
+        if (PC)
+        {
+            PC->SetInputMode(FInputModeGameOnly());
+            PC->bShowMouseCursor = false;
+        }
+        FString MapPath = StartMap[level].ToSoftObjectPath().GetAssetPathString();
+        UGameplayStatics::OpenLevelBySoftObjectPtr(this, StartMap[level]);
+    }
+}
+
+int UMainMenu::LoadLevelProgress()
+{
+    if (UGameplayStatics::DoesSaveGameExist(TEXT("MySaveSlot"), 0))
+    {
+        UMySaveGame* LoadedGame = Cast<UMySaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("MySaveSlot"), 0));
+        if (LoadedGame)
+        {
+            return LoadedGame->PlayerLevel;
+        }
+    }
+    return -1;
 }

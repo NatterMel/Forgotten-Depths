@@ -1,6 +1,7 @@
 #include "LevelTrigger.h"
 #include "Components/BoxComponent.h"
 #include "MainCharacter.h"
+#include "MySaveGame.h"
 #include "Kismet/GameplayStatics.h"
 
 ALevelTrigger::ALevelTrigger()
@@ -31,10 +32,19 @@ void ALevelTrigger::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* 
     {
 
         if (LevelToLoad.ToSoftObjectPath().IsValid())
-        {
+        {      
+            SaveLevelProgress();
             FString LevelPath = LevelToLoad.ToSoftObjectPath().GetLongPackageName();
             UGameplayStatics::OpenLevel(this, FName(*LevelPath));
+
         }
     }
+}
+
+void ALevelTrigger::SaveLevelProgress()
+{
+    UMySaveGame* SaveGameInstance = Cast<UMySaveGame>(UGameplayStatics::CreateSaveGameObject(UMySaveGame::StaticClass()));
+    SaveGameInstance->PlayerLevel = indexToLoad;
+    UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("MySaveSlot"), 0);
 }
 

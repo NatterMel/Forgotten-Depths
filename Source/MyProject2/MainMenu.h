@@ -22,13 +22,16 @@ protected:
     class UButton* StartButton;
 
     UPROPERTY(meta = (BindWidget))
+    class UButton* ContinueButton;
+
+    UPROPERTY(meta = (BindWidget))
     class UButton* OptionsButton;
 
     UPROPERTY(meta = (BindWidget))
     class UButton* QuitButton;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Maps")
-    TSoftObjectPtr<UWorld> StartMap;
+    TArray<TSoftObjectPtr<UWorld>> StartMap;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Menu", meta = (ExposeOnSpawn = true))
     TSubclassOf<UUserWidget> OptionsWidgetClass;
@@ -37,10 +40,17 @@ protected:
     void OnStartClicked();
 
     UFUNCTION()
+    void OnContinueClicked();
+
+    UFUNCTION()
     void OnOptionsClicked();
 
     UFUNCTION()
     void OnQuitClicked();
+
+    int LoadLevelProgress();
+
+    void Loadlevel(int level);
     
     UPROPERTY()
     UUserWidget* OptionsWidget;

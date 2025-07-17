@@ -25,6 +25,8 @@ protected:
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 		bool bFromSweep, const FHitResult& SweepResult);
 
+	void SaveLevelProgress();
+
 public:	
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Trigger")
@@ -32,4 +34,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Maps")
 	TSoftObjectPtr<UWorld> LevelToLoad;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Maps")
+	int indexToLoad;
 };
