@@ -11,6 +11,7 @@
 #include "FadingLight.h"
 #include "MyGameMode.h"
 #include "PauseMenu.h"
+#include "Crosshair.h"
 #include "MainCharacter.generated.h"
 
 
@@ -25,6 +26,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh")
 	class UStaticMeshComponent* MeshComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* ColorIndicator;
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, Category = "Camera")
 	class UCameraComponent* Camera;
@@ -78,13 +82,20 @@ public:
 	TArray<FLinearColor> ColorList;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
-	TSubclassOf<UUserWidget> WidgetClass;
+	TSubclassOf<UCrosshair> HudClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
 	TSubclassOf<UUserWidget> PauseMenu;
 
+	UPROPERTY(EditAnywhere, Category = "Mesh")
+	UMaterialInterface* IndicatorMaterialBase;
+
+	UMaterialInstanceDynamic* IndicatorMaterial;
+
 	void ClearPauseMenu();
 
+	UPROPERTY()
+	UCrosshair* HUDWidget;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

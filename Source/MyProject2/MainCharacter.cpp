@@ -37,6 +37,11 @@ AMainCharacter::AMainCharacter()
 		ColorList.Add(FLinearColor::White);
 	}
 	GameMode = Cast<AMyGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+
+	ColorIndicator = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ColorIndicator"));
+	ColorIndicator->SetupAttachment(Camera);
+	ColorIndicator->SetRelativeScale3D(FVector(0.1f, 0.1f, 0.005f));  
+	ColorIndicator->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void AMainCharacter::ClearPauseMenu()
@@ -58,12 +63,34 @@ void AMainCharacter::BeginPlay()
 			SubSystem->AddMappingContext(InputMapping, 0);
 		}
 	}
+
+	if (HudClass)
+	{
+		HUDWidget = CreateWidget<UCrosshair>(GetWorld(), HudClass);
+		if (HUDWidget)
+		{
+			HUDWidget->AddToViewport();
+			HUDWidget->HideInteractHint();
+		}
+	}
+
+	if (ColorIndicator && IndicatorMaterialBase)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("Bruh"));
+		IndicatorMaterial = UMaterialInstanceDynamic::Create(IndicatorMaterialBase, this);
+		ColorIndicator->SetMaterial(0, IndicatorMaterial);
+		IndicatorMaterial->SetVectorParameterValue("Color", ColorChosen);
+	}
 }
 
 void AMainCharacter::ResetFire()
 {
 	bCanFire = true;
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("CAN FIRE"));
+	if (IndicatorMaterial)
+	{
+		IndicatorMaterial->SetVectorParameterValue("Color", ColorChosen);
+	}
 }
 
 void AMainCharacter::ChangeColor(const FInputActionValue& Value)
@@ -77,6 +104,10 @@ void AMainCharacter::ChangeColor(const FInputActionValue& Value)
 	NextIndex = (NextIndex + NumColors) % NumColors;
 
 	ColorChosen = ColorList[NextIndex];
+	if (IndicatorMaterial)
+	{
+		IndicatorMaterial->SetVectorParameterValue("Color", ColorChosen);
+	}
 	switch (NextIndex)
 	{
 	case 0:
@@ -101,7 +132,12 @@ void AMainCharacter::AddInteract(AActor* Other)
 	if (IInteractable* Interactable = Cast<IInteractable>(Other))
 	{
 		CurrentInteractable = Interactable;
+		if (HUDWidget)
+		{
+			HUDWidget->ShowInteractHint();
+		}
 	}
+
 }
 
 void AMainCharacter::RemoveInteract()
@@ -109,6 +145,10 @@ void AMainCharacter::RemoveInteract()
 	if (CurrentInteractable)
 	{
 		CurrentInteractable = nullptr;
+		if (HUDWidget)
+		{
+			HUDWidget->HideInteractHint();
+		}
 	}
 }
 
@@ -240,8 +280,8 @@ void AMainCharacter::OnFire()
 		bCanFire = false;
 		UWorld* World = GetWorld();
 		if (!World)
-		return;
-		
+			return;
+
 		FCollisionQueryParams TraceParams(FName(TEXT("LineTrace")), true, this);
 		TraceParams.bTraceComplex = true;
 		TraceParams.bReturnPhysicalMaterial = false;
@@ -253,8 +293,13 @@ void AMainCharacter::OnFire()
 		const int32 NumRays = 7;
 		FVector Start = Camera->GetComponentLocation();
 
+		bool bAnyHit = false;
 
-		
+		if (IndicatorMaterial)
+		{
+			IndicatorMaterial->SetVectorParameterValue("Color", FLinearColor::Black);
+		}
+
 		for (int32 i = 0; i < NumRays; i++)
 		{
 			FVector TraceDirection = ForwardVector;
@@ -278,6 +323,8 @@ void AMainCharacter::OnFire()
 			bool bHit = World->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, TraceParams);
 			if (bHit)
 			{
+				bAnyHit = true;
+
 				if (IsValid(BlueprintToSpawn))
 				{
 					FVector SpawnLocation = HitResult.Location - (TraceDirection * 10.f);
@@ -288,14 +335,14 @@ void AMainCharacter::OnFire()
 					++spawnedlights;
 				}
 
-
 				FVector HitLocation = HitResult.Location;
 				//DrawDebugLine(World, Start, HitLocation, FColor::Green, true, 5.f, 0, 5.f);
 			}
-			else
-			{
-				ResetFire();
-			}
+		}
+
+		if (!bAnyHit)
+		{
+			ResetFire();
 		}
 	}
 }
