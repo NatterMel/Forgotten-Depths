@@ -145,18 +145,15 @@ void UOptionsWidget::OnApplyAudioSettingsClicked()
 }
 void UOptionsWidget::OnMasterVolumeChanged(float Value)
 {
-    UE_LOG(LogTemp, Warning, TEXT("Master Volume Changed: %f"), Value);
     UGameplayStatics::SetSoundMixClassOverride(GetWorld(), SoundMix, MasterSoundClass, Value, 1.0f, 0.0f, true);
 }
 
 void UOptionsWidget::OnMusicVolumeChanged(float Value)
 {
-    UE_LOG(LogTemp, Warning, TEXT("Music Volume Changed: %f"), Value);
     UGameplayStatics::SetSoundMixClassOverride(GetWorld(), SoundMix, MusicSoundClass, Value, 1.0f, 0.0f, true);
 }
 
 void UOptionsWidget::OnSFXVolumeChanged(float Value)
 {
-    UE_LOG(LogTemp, Warning, TEXT("SFFX Volume Changed: %f"), Value);
     UGameplayStatics::SetSoundMixClassOverride(GetWorld(), SoundMix, SFXSoundClass, Value, 1.0f, 0.0f, true);
 }
