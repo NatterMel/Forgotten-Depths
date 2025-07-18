@@ -31,6 +31,13 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Lever")
 	AActor* ActorToActivate;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Interaction")
+	bool bCanBeInteractedWith = true;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
+	bool bCanReUse = true;
+
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

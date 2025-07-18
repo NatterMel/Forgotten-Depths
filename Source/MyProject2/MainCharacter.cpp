@@ -22,7 +22,7 @@
 AMainCharacter::AMainCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 	GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = true;
 
 	GetCapsuleComponent()->InitCapsuleSize(40.0f, 95.0f);
@@ -175,6 +175,18 @@ void AMainCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	bool bShouldPlaySteps = GetCharacterMovement()->IsMovingOnGround() && GetVelocity().Size() > 10.f;
+
+	if (bShouldPlaySteps && !bIsPlayingSteps)
+	{
+		bIsPlayingSteps = true;
+		GetWorldTimerManager().SetTimer(StepTimerHandle, this, &AMainCharacter::PlayFootstepSound, 0.6f, true);
+	}
+	else if (!bShouldPlaySteps && bIsPlayingSteps)
+	{
+		bIsPlayingSteps = false;
+		GetWorldTimerManager().ClearTimer(StepTimerHandle);
+	}
 }
 
 void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -290,11 +302,25 @@ void AMainCharacter::LookFuction(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 }
+void AMainCharacter::PlayFootstepSound()
+{
+	if (!StepSound) return;
 
+	if (GetCharacterMovement()->IsMovingOnGround() && GetVelocity().Size() > 10.f)
+	{
+		float RandomPitch = FMath::FRandRange(0.9f, 1.1f);
+		UGameplayStatics::PlaySoundAtLocation(this, StepSound, GetActorLocation(), 1.0f, RandomPitch);
+	}
+}
 void AMainCharacter::OnFire()
 {
 	if (bCanFire)
 	{
+		if (FireSound)
+		{
+			float RandomPitch = FMath::FRandRange(0.85f, 1.2f);
+			UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation(), 0.3f, RandomPitch);
+		}
 		bCanFire = false;
 		UWorld* World = GetWorld();
 		if (!World)
@@ -354,7 +380,6 @@ void AMainCharacter::OnFire()
 				}
 
 				FVector HitLocation = HitResult.Location;
-				//DrawDebugLine(World, Start, HitLocation, FColor::Green, true, 5.f, 0, 5.f);
 			}
 		}
 

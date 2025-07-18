@@ -36,6 +36,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	float DoorOpenSpeed = 200.f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Door|Sound")
+	USoundBase* OpenSound;
+
 protected:
 
 	UPROPERTY(VisibleAnywhere)

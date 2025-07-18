@@ -62,6 +62,7 @@ void ACodeLock::OnCodeCorrect()
         if (bOn)
         {
             IOpenable::Execute_Open(ActorToActivate);
+            bCanBeInteractedWith = false;
         }
     }
 }
@@ -77,16 +78,39 @@ void ACodeLock::OnInteract_Implementation()
         Widget->AddToViewport();
         PC->bShowMouseCursor = true;
         PC->SetInputMode(FInputModeUIOnly());
-        UGameplayStatics::SetGamePaused(GetWorld(), true);
     }
 }
 
 
 void ACodeLock::CheckCode()
 {
+    FString EnteredString;
+    for (int32 Digit : EnteredCode)
+    {
+        EnteredString += FString::FromInt(Digit);
+    }
+
+    FString CorrectString;
+    for (int32 Digit : CorrectCode)
+    {
+        CorrectString += FString::FromInt(Digit);
+    }
+
+    // Print to screen
+    if (GEngine)
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("Entered Code: %s"), *EnteredString));
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, FString::Printf(TEXT("Correct Code: %s"), *CorrectString));
+    }
+
+    // Print to output log
+    UE_LOG(LogTemp, Warning, TEXT("Entered Code: %s"), *EnteredString);
+    UE_LOG(LogTemp, Warning, TEXT("Correct Code: %s"), *CorrectString);
+
+    // Check logic
     if (EnteredCode == CorrectCode)
     {
-        OnCodeCorrect(); 
+        OnCodeCorrect();
     }
     else
     {

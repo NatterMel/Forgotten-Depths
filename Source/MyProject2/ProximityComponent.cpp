@@ -25,7 +25,7 @@ UProximityComponent::UProximityComponent()
 void UProximityComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	AActor* Owner = GetOwner();
+	Owner = GetOwner();
 	if (!Owner) return;
 
 	USceneComponent* Root = Owner->GetRootComponent();
@@ -41,15 +41,20 @@ void UProximityComponent::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AA
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 	bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor)
+	if (!OtherActor || !Owner) return;
+
+	
+	FProperty* BoolProperty = Owner->GetClass()->FindPropertyByName("bCanBeInteractedWith");
+	if (FBoolProperty* BoolProp = CastField<FBoolProperty>(BoolProperty))
 	{
-		if (AMainCharacter* Actor = Cast<AMainCharacter>(OtherActor))
-		{
-			Actor->AddInteract(GetOwner());
-		}
+		bool bValue = BoolProp->GetPropertyValue_InContainer(Owner);
+		if (!bValue) return;
 	}
 
-
+	if (AMainCharacter* Actor = Cast<AMainCharacter>(OtherActor))
+	{
+		Actor->AddInteract(Owner);
+	}
 }
 void UProximityComponent::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)

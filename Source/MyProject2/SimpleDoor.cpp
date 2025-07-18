@@ -5,7 +5,9 @@
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Interactable.h"
+#include "Sound/SoundBase.h"
 #include "GameFramework/Character.h"
+#include <Kismet/GameplayStatics.h>
 
 // Sets default values
 ASimpleDoor::ASimpleDoor()
@@ -58,5 +60,9 @@ void ASimpleDoor::Open_Implementation()
     bIsmoving = true;
     bIsOpen = false;
     bHasBeenOpened = true;
+    if (OpenSound)
+    {
+        UGameplayStatics::PlaySoundAtLocation(this, OpenSound, GetActorLocation());
+    }
 }
 

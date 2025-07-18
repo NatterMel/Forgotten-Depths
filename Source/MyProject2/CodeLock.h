@@ -52,6 +52,8 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Code Lock")
     TArray<int32> EnteredCode;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Interaction")
+    bool bCanBeInteractedWith = true;
 protected:
 
 

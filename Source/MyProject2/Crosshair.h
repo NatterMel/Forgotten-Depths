@@ -21,10 +21,19 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* InteractText;
 
+	UPROPERTY(meta = (BindWidget))
+	class UMultiLineEditableText* AutoHintText;
+
 	UFUNCTION(BlueprintCallable)
 	void ShowInteractHint();
 
 	UFUNCTION(BlueprintCallable)
 	void HideInteractHint();
+
+	UFUNCTION(BlueprintCallable)
+	void ShowAutoHint();
+
+	virtual void NativeConstruct() override;
+	FTimerHandle HintTimerHandle;
 	
 };

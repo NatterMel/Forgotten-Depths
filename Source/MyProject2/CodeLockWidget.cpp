@@ -22,6 +22,7 @@ void UCodeLockWidget::NativeConstruct()
     if (Btn_9) Btn_9->OnClicked.AddDynamic(this, &UCodeLockWidget::OnBtn9Clicked);
     if (Btn_Clear) Btn_Clear->OnClicked.AddDynamic(this, &UCodeLockWidget::OnBtnClearClicked);
     if (Btn_Check) Btn_Check->OnClicked.AddDynamic(this, &UCodeLockWidget::OnBtnCheckClicked);
+    if (Btn_Exit) Btn_Exit->OnClicked.AddDynamic(this, &UCodeLockWidget::OnBtnExitClicked);
 }
 
 void UCodeLockWidget::HandleDigit(int32 Digit)
@@ -89,17 +90,13 @@ void UCodeLockWidget::OnBtn8Clicked() { HandleDigit(8); }
 void UCodeLockWidget::OnBtn9Clicked() { HandleDigit(9); }
 
 void UCodeLockWidget::CloseWidget()
-{
-    if (GetWorld())
-    {
-        UGameplayStatics::SetGamePaused(GetWorld(), false);
-    }
-
+{   
+    RemoveFromParent();
     if (APlayerController* PC = GetWorld()->GetFirstPlayerController())
     {
         PC->bShowMouseCursor = false;
         PC->SetInputMode(FInputModeGameOnly());
     }
 
-    RemoveFromParent();
+
 }

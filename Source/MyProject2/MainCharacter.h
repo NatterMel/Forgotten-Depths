@@ -98,6 +98,14 @@ public:
 	UCrosshair* HUDWidget;
 
 	void DeactivateHUD();
+	UPROPERTY(EditAnywhere, Category = "Sound")
+	USoundBase* FireSound;
+
+	UPROPERTY(EditAnywhere, Category = "Sound")
+	USoundBase* StepSound;
+
+	FTimerHandle StepTimerHandle;
+	bool bIsPlayingSteps = false;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -125,7 +133,8 @@ protected:
 
 	UPROPERTY()
 	UUserWidget* PauseMenuInstance;
-
+	UFUNCTION()
+	void PlayFootstepSound();
 
 	int spawnedlights = 0;
 

@@ -39,6 +39,10 @@ void ALeverActor::OnInteract_Implementation()
 		if (bOn)
 		{
 			IOpenable::Execute_Open(ActorToActivate);
+			if (!bCanReUse)
+			{
+				bCanBeInteractedWith = false;
+			}
 		}
 	}
 }
